@@ -45,7 +45,7 @@ public class GuestController {
 		model.addAttribute("blockSize", blockSize);
 		model.addAttribute("curBlock", curBlock);
 		model.addAttribute("lastBlock", lastBlock);
-    //model.addAttribute("newLine", System.lineSeparator());
+    model.addAttribute("newLine", System.lineSeparator());
 
 		return "guest/guestList";
 	}

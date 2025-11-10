@@ -69,9 +69,7 @@
       </tr>
       <tr>
         <th>방문소감</th>
-        <td colspan="3" style="height:150px; text-align:left"
-            th:utext="${#strings.replace(dto.content, T(java.lang.System).lineSeparator(), '<br/>')}">
-        </td>
+        <td th:utext="${#strings.replace(dto.content, newLine, '<br/>')}"></td>
       </tr>
     </table>
     <br/>
