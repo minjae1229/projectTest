@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{layouts/basicLayout}">
+
+<th:block layout:fragment="css">
+  <style>
+    th {
+      background-color: #eee !important;
+      width: 150px !important;
+      text-align: center !important;
+    }
+  </style>
+</th:block>
+
+<div layout:fragment="content">
+  <h2 class="text-center">방명록 리스트</h2>
+
+  <!-- 상단 페이징 -->
+  <table class="table table-borderless m-0 p-0">
+    <tr>
+      <td class="text-start">
+        <a th:href="@{/guest/guestInput}" class="btn btn-success btn-sm">글쓰기</a>
+      </td>
+      <td class="text-end">
+
+        <th:block th:if="${pag > 0}">
+          <a th:href="@{/guest/guestList(pag=0,pageSize=${pageSize})}">◁</a>
+          <a th:href="@{/guest/guestList(pag=${pag-1},pageSize=${pageSize})}">◀</a>
+        </th:block>
+
+        [[${pag+1}]] / [[${totPage}]]
+
+        <th:block th:if="${pag < totPage-1}">
+          <a th:href="@{/guest/guestList(pag=${pag+1},pageSize=${pageSize})}">▶</a>
+          <a th:href="@{/guest/guestList(pag=${totPage-1},pageSize=${pageSize})}">▷</a>
+        </th:block>
+
+      </td>
+    </tr>
+  </table>
+
+
+  <!-- 리스트 출력 -->
+  <div th:each="dto, stat : ${dtos}">
+    <table class="table table-borderless m-0 p-0">
+      <tr>
+        <td class="text-start">
+          번호 : [[${curScrStartNo - stat.index}]]
+        </td>
+        <td class="text-end">방문IP : [[${dto.hostIp}]]</td>
+      </tr>
+    </table>
+    <table class="table table-bordered">
+      <tr>
+        <th>성명</th>
+        <td>[[${dto.name}]]</td>
+        <th>방문일자</th>
+        <td>[[${dto.visitDate}]]</td>
+      </tr>
+      <tr>
+        <th>이메일</th>
+        <td colspan="3">[[${dto.email}]]</td>
+      </tr>
+      <tr>
+        <th>홈페이지</th>
+        <td colspan="3">[[${dto.homePage}]]</td>
+      </tr>
+      <tr>
+        <th>방문소감</th>
+        <td colspan="3" style="height:150px; text-align:left"
+            th:utext="${#strings.replace(dto.content, T(java.lang.System).lineSeparator(), '<br/>')}">
+        </td>
+      </tr>
+    </table>
+    <br/>
+  </div>
+
+
+  <!-- 블록페이징 -->
+  <div class="text-center">
+    <th:block th:if="${curBlock > 0}">
+      [<a th:href="@{/guest/guestList(pag=${(curBlock-1)*blockSize},pageSize=${pageSize})}">첫페이지</a>]
+    </th:block>
+
+    <th:block th:each="i: ${#numbers.sequence((curBlock*blockSize)+1, (curBlock*blockSize)+blockSize)}">
+      <th:block th:if="${i <= totPage}">
+        <th:block th:if="${i == pag+1}">
+          [<b><font color="red">[[${i}]]</font></b>]
+        </th:block>
+        <th:block th:if="${i != pag+1}">
+          [<a th:href="@{/guest/guestList(pag=${i-1},pageSize=${pageSize})}">[[${i}]]</a>]
+        </th:block>
+      </th:block>
+    </th:block>
+
+    <th:block th:if="${curBlock < lastBlock}">
+      [<a th:href="@{/guest/guestList(pag=${(curBlock+1)*blockSize},pageSize=${pageSize})}">마지막페이지</a>]
+    </th:block>
+  </div>
+
+</div>
+
+</html>
