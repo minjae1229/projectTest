@@ -4,7 +4,6 @@ import com.example.demo9.dto.GuestDto;
 import com.example.demo9.entity.Guest;
 import com.example.demo9.service.GuestService;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
@@ -22,13 +21,12 @@ public class GuestController {
   private final GuestService guestService;
 	
 	// 방명록 전체 리스트(페이징처리)
-	@GetMapping("/guestList")
-	public String guestListGet(Model model,
-			@RequestParam(name="pag", defaultValue = "0", required = false) int pag,
-			@RequestParam(name="pageSize", defaultValue = "3", required = false) int pageSize
-		) {
+  @GetMapping("/guestList")
+  public String guestListGet(Model model,
+                             @RequestParam(name="pag", defaultValue = "0") int pag,
+                             @RequestParam(name="pageSize", defaultValue = "3") int pageSize) {
+
     Page<Guest> dtos = guestService.getGuestList(pag, pageSize);
-    System.out.println("------------dtos : " + dtos.getContent());
 
     int totPage = dtos.getTotalPages();
     int curScrStartNo = (int) dtos.getTotalElements() - (pag * pageSize);
@@ -38,18 +36,20 @@ public class GuestController {
     int lastBlock = (totPage - 1) / blockSize;
 
     model.addAttribute("dtos", dtos.getContent());
-		model.addAttribute("pag", pag);
-		model.addAttribute("pageSize", pageSize);
-		model.addAttribute("totPage", totPage);
-		model.addAttribute("curScrStartNo", curScrStartNo);
-		model.addAttribute("blockSize", blockSize);
-		model.addAttribute("curBlock", curBlock);
-		model.addAttribute("lastBlock", lastBlock);
+    model.addAttribute("pag", pag);         // 0 base
+    model.addAttribute("pageSize", pageSize);
+    model.addAttribute("totPage", totPage);
+    model.addAttribute("curScrStartNo", curScrStartNo);
+    model.addAttribute("blockSize", blockSize);
+    model.addAttribute("curBlock", curBlock);
+    model.addAttribute("lastBlock", lastBlock);
+    model.addAttribute("newLine", System.lineSeparator());
+
+    // 개행처리를 위한 코드
     model.addAttribute("newLine", System.lineSeparator());
 
 		return "guest/guestList";
 	}
-
 	// 방명록 등록폼 보기
 	@GetMapping("/guestInput")
 	public String guestInputGet() {
@@ -60,13 +60,18 @@ public class GuestController {
 	@PostMapping("/guestInput")
 	public String guestInputPost(Model model, GuestDto dto, HttpServletRequest request) {
     dto.setHostIp(request.getRemoteAddr());
+
+    // homepage를 안쓴 경우 빈값으로 처리
+    if("https://".equals(dto.getHomePage())) {
+      dto.setHomePage("");
+    }
     Guest guest = Guest.dtoToEntity(dto);
 		guestService.setGuestInput(guest);
-		
+
 		return "redirect:/message/guestInputOk";
 	}
 
-/*
+	/*
 	// 관리자 인증폼 보기
 	@GetMapping("/admin")
 	public String adminGet() {
@@ -90,15 +95,14 @@ public class GuestController {
 		
 		return "redirect:/message/adminOut";
 	}
-	
+  */
+
 	// 방명록 게시글 삭제처리
 	@GetMapping("/guestDelete")
-	public String guestDeleteGet(int idx) {
-		int res = guestService.setGuestDelete(idx);
-		
-		if(res != 0) return "redirect:/message/guestDeleteOk";
-		else return "redirect:/message/guestDeleteNo";
+	public String guestDeleteGet(Long id) {
+		guestService.setGuestDelete(id);
+
+    return "redirect:/message/guestDeleteOk";
 	}
 
-  */
 }

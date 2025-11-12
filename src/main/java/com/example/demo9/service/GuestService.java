@@ -25,4 +25,8 @@ public class GuestService {
   public void setGuestInput(Guest guest) {
     guestRepository.save(guest);
   }
+
+  public void setGuestDelete(Long id) {
+    guestRepository.deleteById(id);
+  }
 }

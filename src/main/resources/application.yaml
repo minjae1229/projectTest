@@ -15,18 +15,18 @@ spring:
   thymeleaf:
     cache: false
 
-  # Database Settring(datasource)
+  # Database Setting(datasource)
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/springgroup
     username: root
     password: 1234
 
-  # JAP Setting
+  # JPA Setting
   jpa:
     open-in-view: true
     hibernate:
-      ddl-auto: update  # create, update, none, create-drop, validate....
+      ddl-auto: update
       naming:
         physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
     show-sql: true
@@ -35,12 +35,25 @@ spring:
         format_sql: true
     database-platform: org.hibernate.dialect.MySQL8Dialect
 
-  # user Password Setting(사용자 로그인 정보 설정)
+  # Security Default User (for test)
   security:
     user:
       name: admin@green.com
       password: 1234
 
+  # File upload MaxSize Setting
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 30MB
+
+  # ✅ Static resource mapping 추가 (ckeditorUpload 경로를 정적 리소스로 등록)
+  web:
+    resources:
+      static-locations:
+        - classpath:/static/
+        - file:src/main/webapp/
 
 # Log information Setting
 logging:
@@ -50,4 +63,3 @@ logging:
         type:
           descriptor:
             sql: trace
-

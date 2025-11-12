@@ -6,12 +6,13 @@ import jakarta.validation.constraints.Email;
 import lombok.*;
 import org.hibernate.validator.constraints.URL;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import java.time.LocalDateTime;
 
-@EnableJpaAuditing
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "guest1")
 @Getter
 @Setter
