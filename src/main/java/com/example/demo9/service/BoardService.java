@@ -4,11 +4,15 @@ import com.example.demo9.entity.Board;
 import com.example.demo9.entity.BoardReply;
 import com.example.demo9.repository.BoardReplyRepository;
 import com.example.demo9.repository.BoardRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import java.io.File;
 import java.util.List;
 
 @Service
@@ -46,6 +50,34 @@ public class BoardService {
 
   public List<BoardReply> getBoardReply(Long boardId) {
     return boardReplyRepository.findByBoardIdOrderById(boardId);
+  }
+
+  public void setBoardReplyInput(BoardReply boardReply) {
+    boardReplyRepository.save(boardReply);
+  }
+
+  public boolean setBoardImageDelete(String content, String realPath) {
+    //             0         1         2         3         4         5
+    //             012345678901234567890123456789012345678901234567890
+    // <img alt="" src="/ckeditorUpload/250916121142_4.jpg" style="height:402px; width:600px" />
+
+    int position = 21;
+    String nextImg = content.substring(content.indexOf("src=\"/") + position);
+    boolean sw = true, flag = false;
+
+    while(sw) {
+      String imgFile = nextImg.substring(0, nextImg.indexOf("\""));
+      String origFilePath = realPath + imgFile;
+
+      File delFile = new File(origFilePath);
+      if(delFile.exists()) delFile.delete();
+
+      if(nextImg.indexOf("src=\"/") == -1) sw = false;
+      else nextImg = nextImg.substring(nextImg.indexOf("src=\"/") + position);
+
+      flag = true;
+    }
+    return flag;
   }
 
 //  public List<Board> getBoardList(int pag, int pageSize, String search, String searchString) {

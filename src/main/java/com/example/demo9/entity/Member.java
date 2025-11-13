@@ -2,6 +2,7 @@ package com.example.demo9.entity;
 
 import com.example.demo9.constant.Role;
 import com.example.demo9.dto.MemberDto;
+import groovyjarjarpicocli.CommandLine;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;

@@ -7,12 +7,10 @@ import lombok.*;
 import org.hibernate.validator.constraints.URL;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import java.time.LocalDateTime;
 
 @Entity
-@EntityListeners(AuditingEntityListener.class)
 @Table(name = "guest1")
 @Getter
 @Setter
@@ -20,7 +18,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EntityListeners(AuditingEntityListener.class)
 public class Guest {
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "guest_id")
@@ -42,7 +42,6 @@ public class Guest {
   private String homePage;
 
   @CreatedDate
-  @Column(updatable = false)
   private LocalDateTime visitDate;
 
   @Column(length = 20, nullable = false)

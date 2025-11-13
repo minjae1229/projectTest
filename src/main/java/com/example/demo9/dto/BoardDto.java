@@ -22,15 +22,15 @@ public class BoardDto {
   @Column(length = 20, nullable = false)
   private String name;
 
-  @NotEmpty(message = "이메일은 필수 입력입니다.")
-  @Email(message = "이메일 형식을 확인하세요")
+  @NotEmpty(message = "이메일은 필수입력입니다.")
+  @Email(message = " 이메일 형식을 확인하세요")
   @Column(unique = true, length = 50)
   private String email;
 
-  @NotEmpty(message = "제목은 필수 입력입니다.")
+  @NotEmpty(message = "제목은 필수입력입니다.")
   private String title;
 
-  @NotEmpty(message = "글내용은 필수 입력입니다.")
+  @NotEmpty(message = "글내용은 필수입력입니다.")
   private String content;
 
   private String hostIp;
@@ -45,7 +45,7 @@ public class BoardDto {
 
   private String complaint;
 
-  //Entity to DTO
+  // Entity to DTO
   public static BoardDto entityToDto(Optional<Board> opBoard) {
     return BoardDto.builder()
             .id(opBoard.get().getId())

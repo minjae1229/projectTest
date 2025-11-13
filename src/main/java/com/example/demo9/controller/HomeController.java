@@ -1,6 +1,7 @@
 package com.example.demo9.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -9,10 +10,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 @Controller
 public class HomeController {
@@ -24,38 +25,41 @@ public class HomeController {
 
   @PostMapping("/ckeditor/imageUpload")
   @ResponseBody
-  public Map<String, Object> imageUpload(@RequestParam("upload") MultipartFile upload) {
-    Map<String, Object> result = new HashMap<>();
-    try {
-      // 날짜 폴더 생성 (선택)
-      String today = new SimpleDateFormat("yyyyMMdd").format(new Date());
+  public void imageUploadPost(@RequestParam("upload") MultipartFile upload,
+                              @RequestParam(value="CKEditorFuncNum", required = false) String callback,
+                              HttpServletRequest request,
+                              HttpServletResponse response) throws IOException {
 
-      // 📌 상대경로 기반으로 프로젝트 내 업로드 폴더 설정
-      String uploadPath = new File("").getAbsolutePath() + File.separator + "src"
-              + File.separator + "main"
-              + File.separator + "webapp"
-              + File.separator + "ckeditorUpload";
+    response.setCharacterEncoding("utf-8");
 
-      File dir = new File(uploadPath, today);
-      if (!dir.exists()) dir.mkdirs();
+    // 저장 경로 (실제 경로에 맞게 조정)
+    String realPathPath = request.getServletContext().getRealPath("/ckeditorUpload/");
+    File folder = new File(realPathPath);
+    if (!folder.exists()) folder.mkdirs();
 
-      // 파일명 중복 방지
-      String originalFilename = upload.getOriginalFilename();
-      String saveName = System.currentTimeMillis() + "_" + originalFilename;
-      File saveFile = new File(dir, saveName);
+    // 파일 저장
+    String originalName = upload.getOriginalFilename();
+    String newName = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + "_" + originalName;
+    File file = new File(realPathPath, newName);
+    upload.transferTo(file);
 
-      upload.transferTo(saveFile);
+    String fileUrl = request.getContextPath() + "/ckeditorUpload/" + newName;
 
-      // CKEditor가 요구하는 응답 구조
-      result.put("uploaded", 1);
-      result.put("fileName", saveName);
-      result.put("url", "/ckeditorUpload/" + today + "/" + saveName);
-
-    } catch (Exception e) {
-      result.put("uploaded", 0);
-      result.put("error", Map.of("message", "이미지 업로드 실패: " + e.getMessage()));
-      e.printStackTrace();
+    // 콜백 응답
+    PrintWriter out = response.getWriter();
+    if(callback != null) {
+      response.setContentType("text/html;charset=utf-8");
+      out.println("<script type='text/javascript'>");
+      out.println("window.parent.CKEDITOR.tools.callFunction(" + callback + ", '" + fileUrl + "', '이미지 업로드 완료');");
+      out.println("</script>");
     }
-    return result;
+    else {
+      response.setContentType("application/json;charset=utf-8");
+      out.println("{");
+      out.println("  \"uploaded\": true,");
+      out.println("  \"url\": \"" + fileUrl + "\"");
+      out.println("}");
+    }
+    out.flush();
   }
 }

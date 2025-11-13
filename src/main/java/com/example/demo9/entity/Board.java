@@ -62,12 +62,13 @@ public class Board {
   @ColumnDefault("'NO'")
   private String complaint;
 
-  // 댓글 릴레이션 설정
+  // 댓글과의 연관관계설정
   @Builder.Default
   @OneToMany(fetch = FetchType.LAZY, mappedBy = "board")
+//  @OneToMany(fetch = FetchType.LAZY, mappedBy = "board", cascade = CascadeType.REMOVE)
   private List<BoardReply> boardReplies = new ArrayList<>();
 
-  // 계산에만 사용하는 필드
+  // JPA 영속적이지 않는 필드로 계산시에만 사용하기위한 필드 선언 : @Transient
   @Transient
   private long hourDiff;
 
@@ -77,7 +78,7 @@ public class Board {
   @Transient
   private long replyCnt;
 
-  //dto to entity
+  // dto to entity
   public static Board dtoToEntity(BoardDto dto, Member member) {
     return Board.builder()
             .id(dto.getId())
@@ -93,4 +94,5 @@ public class Board {
             .complaint(dto.getComplaint())
             .build();
   }
+
 }
