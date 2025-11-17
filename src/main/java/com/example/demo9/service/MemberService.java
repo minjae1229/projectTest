@@ -1,5 +1,6 @@
 package com.example.demo9.service;
 
+import com.example.demo9.constant.UserDel;
 import com.example.demo9.entity.Member;
 import com.example.demo9.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,9 +27,9 @@ public class MemberService implements UserDetailsService {
 
   private void validateMemberEmailDuplicationCheck(String email) {
     // 회원 이메일 중복체크
-    Optional<Member> optionalMember = memberRepository.findByEmail(email);
+    Optional<Member> opMember = memberRepository.findByEmail(email);
 
-    if(optionalMember.isPresent()) { throw new IllegalStateException("이미 존재하는 회원입니다."); }
+    if(opMember.isPresent()) { throw new IllegalStateException("이미 존재하는 회원입니다."); }
   }
 
   public Optional<Member> getMemberEmailCheck(String email) {
@@ -37,13 +38,14 @@ public class MemberService implements UserDetailsService {
 
   @Override
   public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-    Member member = memberRepository.findByEmail(email)
-            .orElseThrow(() -> new UsernameNotFoundException("회원 정보가 없습니다. " + email));
+    //Optional<Member> opMember = Optional.ofNullable(memberRepository.findByEmail(email)
+    Optional<Member> opMember = Optional.ofNullable((Member) memberRepository.findByEmailAndUserDel(email, UserDel.NO)
+            .orElseThrow(() -> new UsernameNotFoundException("회원 정보가 없습니다." + email)));
 
     return User.builder()
-            .username(member.getEmail())
-            .password(member.getPassword())
-            .roles(member.getRole().toString())
+            .username(opMember.get().getEmail())
+            .password(opMember.get().getPassword())
+            .roles(opMember.get().getRole().toString())
             .build();
   }
 }

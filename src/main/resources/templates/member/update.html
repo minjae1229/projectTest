@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/basicLayout}">
+
+<div layout:fragment="content" class="text-center">
+
+  <h2>내 정보 수정</h2>
+  <hr>
+
+  <form th:action="@{/member/update}" method="post"
+        class="mt-4" style="max-width: 500px; margin: 0 auto;">
+
+    <div class="mb-3 text-start">
+      <label class="form-label">이메일 (수정 불가)</label>
+      <input type="text" th:value="${member.email}" class="form-control" disabled>
+    </div>
+
+    <div class="mb-3 text-start">
+      <label class="form-label">이름</label>
+      <input type="text" name="name" th:value="${member.name}" class="form-control" required>
+    </div>
+
+    <div class="mb-3 text-start">
+      <label class="form-label">주소</label>
+      <input type="text" name="address" th:value="${member.address}" class="form-control">
+    </div>
+
+    <button type="submit" class="btn btn-success w-100">
+      정보 수정하기
+    </button>
+
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+  </form>
+
+</div>
+
+</html>

@@ -1,5 +1,7 @@
 package com.example.demo9.config;
 
+//import com.example.demo9.common.CustomLoginFailureHandler;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -8,12 +10,17 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 
+//@RequiredArgsConstructor
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+  //private final CustomLoginFailureHandler customLoginFailureHandler;
+
 
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -35,6 +42,7 @@ public class SecurityConfig {
             .formLogin(form -> form
                     .loginPage("/member/memberLogin")
                     .defaultSuccessUrl("/member/memberLoginOk", true)
+                    //.failureHandler(customLoginFailureHandler)   // 이 부분 변경
                     .failureUrl("/member/login/error")
                     .usernameParameter("email")   // 시큐리트 입력 파라메터가 name인데, 이곳에선 email로 사용함
                     .permitAll());

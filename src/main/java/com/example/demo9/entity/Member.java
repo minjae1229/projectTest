@@ -1,11 +1,13 @@
 package com.example.demo9.entity;
 
 import com.example.demo9.constant.Role;
+import com.example.demo9.constant.UserDel;
 import com.example.demo9.dto.MemberDto;
 import groovyjarjarpicocli.CommandLine;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import org.apache.catalina.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Entity
@@ -37,6 +39,9 @@ public class Member {
   @Enumerated(EnumType.STRING)
   private Role role;
 
+  @Enumerated(EnumType.STRING)
+  private UserDel userDel;
+
   public static Member dtoToEntity(MemberDto dto, PasswordEncoder passwordEncoder) {
     return Member.builder()
             .name(dto.getName())
@@ -44,6 +49,7 @@ public class Member {
             .password(passwordEncoder.encode(dto.getPassword()))
             .address(dto.getAddress())
             .role(Role.USER)
+            .userDel(UserDel.NO)
             .build();
   }
 }
